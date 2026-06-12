@@ -1,3 +1,46 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "minecraft-hero",
+      "description": "Epic Minecraft landscape",
+      "imageUrl": "https://picsum.photos/seed/minecraft/1200/400",
+      "imageHint": "minecraft blocky world"
+    },
+    {
+      "id": "valorant-hero",
+      "description": "Tactical shooter abstract art",
+      "imageUrl": "https://picsum.photos/seed/valorant/1200/400",
+      "imageHint": "tactical shooter cyberpunk"
+    },
+    {
+      "id": "elden-ring-hero",
+      "description": "Dark fantasy landscape",
+      "imageUrl": "https://picsum.photos/seed/eldenring/1200/400",
+      "imageHint": "dark fantasy world"
+    },
+    {
+      "id": "user-avatar-1",
+      "description": "Gamer profile avatar",
+      "imageUrl": "https://picsum.photos/seed/gamer1/150/150",
+      "imageHint": "modern gamer profile"
+    },
+    {
+      "id": "user-avatar-2",
+      "description": "Female gamer avatar",
+      "imageUrl": "https://picsum.photos/seed/gamer2/150/150",
+      "imageHint": "female gamer portrait"
+    },
+    {
+      "id": "game-poster-1",
+      "description": "Minecraft game poster",
+      "imageUrl": "https://picsum.photos/seed/mcposter/300/450",
+      "imageHint": "minecraft art"
+    },
+    {
+      "id": "game-poster-2",
+      "description": "Valorant game poster",
+      "imageUrl": "https://picsum.photos/seed/vposter/300/450",
+      "imageHint": "valorant shooter art"
+    }
+  ]
 }
