@@ -1,10 +1,19 @@
 
+import type { Metadata } from 'next';
 import { NexusSidebar } from '@/components/layout/sidebar';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Bell, User, Lock, Monitor, ShieldAlert } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: 'Settings | OMNIX.GG',
+  description: 'Manage your OMNIX account settings, notifications, and privacy.',
+  icons: {
+    icon: '/images/gear-icon.png',
+  },
+};
 
 export default function SettingsPage() {
   return (
