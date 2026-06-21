@@ -4,25 +4,25 @@
       "id": "minecraft-hero",
       "description": "Vibrant block-based world landscape",
       "imageUrl": "https://picsum.photos/seed/minecraft-env/1200/400",
-      "imageHint": "minecraft blocks"
+      "imageHint": "minecraft game"
     },
     {
       "id": "valorant-hero",
       "description": "Neon tactical shooter arena",
       "imageUrl": "https://picsum.photos/seed/valorant-arena/1200/400",
-      "imageHint": "tactical shooter"
+      "imageHint": "valorant shooter"
     },
     {
       "id": "elden-ring-hero",
       "description": "Epic dark fantasy erdtree landscape",
       "imageUrl": "https://picsum.photos/seed/elden-world/1200/400",
-      "imageHint": "dark fantasy"
+      "imageHint": "elden ring"
     },
     {
       "id": "game-poster-minecraft",
       "description": "Minecraft adventure poster",
       "imageUrl": "https://picsum.photos/seed/mc-box/300/450",
-      "imageHint": "minecraft poster"
+      "imageHint": "minecraft blocks"
     },
     {
       "id": "game-poster-valorant",
@@ -34,7 +34,7 @@
       "id": "game-poster-elden",
       "description": "Elden Ring tarnished poster",
       "imageUrl": "https://picsum.photos/seed/elden-art/300/450",
-      "imageHint": "elden ring"
+      "imageHint": "elden ring boss"
     }
   ]
 }

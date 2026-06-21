@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, use } from 'react';
 import { NexusSidebar } from '@/components/layout/sidebar';
 import { MOCK_GAMES, MOCK_CHATS, ChatMessage } from '@/lib/mock-data';
 import { notFound } from 'next/navigation';
@@ -35,7 +35,7 @@ export default function HubPage({ params }: { params: Promise<{ id: string }> })
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
 
-    setMessages([...messages, newMessage]);
+    setMessages(prev => [...prev, newMessage]);
     setInputValue('');
   };
 
@@ -43,7 +43,6 @@ export default function HubPage({ params }: { params: Promise<{ id: string }> })
     <div className="flex h-screen overflow-hidden">
       <NexusSidebar />
       <main className="flex-1 flex flex-col bg-background">
-        {/* Hub Header */}
         <header className="relative h-48 w-full border-b border-border">
           <Image
             src={game.hero}
@@ -65,18 +64,9 @@ export default function HubPage({ params }: { params: Promise<{ id: string }> })
                 </p>
               </div>
             </div>
-            <div className="hidden md:flex gap-2">
-              <Button variant="outline" size="sm" className="gap-2">
-                <ShieldCheck className="w-4 h-4" /> Credentials Required
-              </Button>
-              <Button variant="outline" size="sm" className="gap-2">
-                <Info className="w-4 h-4" /> Game Info
-              </Button>
-            </div>
           </div>
         </header>
 
-        {/* Chat Area */}
         <div className="flex-1 flex overflow-hidden">
           <div className="flex-1 flex flex-col p-6 overflow-hidden">
             <ScrollArea className="flex-1 pr-4 mb-4">
@@ -123,7 +113,6 @@ export default function HubPage({ params }: { params: Promise<{ id: string }> })
             </div>
           </div>
 
-          {/* Sidebar Chat Info */}
           <aside className="hidden lg:block w-72 border-l border-border bg-card/20 p-6">
             <h3 className="font-headline font-bold text-lg mb-4 flex items-center gap-2">
               <Users className="w-5 h-5 text-secondary" /> Active Teammates
@@ -140,11 +129,6 @@ export default function HubPage({ params }: { params: Promise<{ id: string }> })
                   <span className="text-sm font-medium">{user}</span>
                 </div>
               ))}
-            </div>
-            <div className="mt-8">
-               <Button className="w-full bg-secondary hover:bg-secondary/80 text-white font-bold">
-                 Request Team Up
-               </Button>
             </div>
           </aside>
         </div>

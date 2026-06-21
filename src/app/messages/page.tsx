@@ -34,7 +34,8 @@ export default function MessagesPage() {
           ...thread,
           messages: [...thread.messages, newMessage],
           lastMessage: inputValue,
-          time: 'Just now'
+          time: 'Just now',
+          unread: false
         };
       }
       return thread;
@@ -102,7 +103,6 @@ export default function MessagesPage() {
 
           {/* Chat Window */}
           <section className="flex-1 flex flex-col bg-card/5">
-            {/* Chat Header */}
             <header className="p-4 border-b border-border flex items-center justify-between bg-background/50 backdrop-blur-sm">
               <div className="flex items-center gap-3">
                 <Avatar className="w-10 h-10 border border-primary/20">
@@ -124,7 +124,6 @@ export default function MessagesPage() {
               </div>
             </header>
 
-            {/* Messages Area */}
             <ScrollArea className="flex-1 p-6">
               <div className="max-w-4xl mx-auto space-y-6">
                 {activeThread.messages.map((msg) => (
@@ -149,7 +148,6 @@ export default function MessagesPage() {
               </div>
             </ScrollArea>
 
-            {/* Input Area */}
             <div className="p-4 bg-background border-t border-border">
               <div className="relative max-w-4xl mx-auto flex gap-2">
                 <Input 
