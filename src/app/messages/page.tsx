@@ -1,9 +1,10 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NexusSidebar } from '@/components/layout/sidebar';
-import { MOCK_THREADS, MessageThread } from '@/lib/mock-data';
+import { MessageThread } from '@/lib/mock-data';
+import { getThreads, createMessage } from '@/lib/actions';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -12,20 +13,48 @@ import { Search, Send, MoreVertical } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function MessagesPage() {
-  const [threads, setThreads] = useState<MessageThread[]>(MOCK_THREADS);
-  const [activeThreadId, setActiveThreadId] = useState(threads[0].id);
+  const [threads, setThreads] = useState<MessageThread[]>([]);
+  const [activeThreadId, setActiveThreadId] = useState('t1');
   const [inputValue, setInputValue] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const activeThread = threads.find(t => t.id === activeThreadId) || threads[0];
+  useEffect(() => {
+    let active = true;
+    const fetchThreads = async () => {
+      try {
+        const data = await getThreads();
+        if (active) {
+          setThreads(data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch threads:', err);
+      }
+    };
+    fetchThreads();
+    return () => {
+      active = false;
+    };
+  }, []);
 
-  const handleSendMessage = () => {
+  const activeThread = threads.find(t => t.id === activeThreadId) || threads[0] || {
+    id: '',
+    user: { name: 'Chat', avatar: '', status: 'offline' as const },
+    lastMessage: '',
+    time: '',
+    unread: false,
+    messages: []
+  };
+
+  const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
 
+    const text = inputValue.trim();
+    setInputValue('');
+
     const newMessage = {
-      id: Date.now().toString(),
+      id: `opt-${Date.now()}`,
       sender: 'me' as const,
-      text: inputValue,
+      text: text,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
 
@@ -34,7 +63,7 @@ export default function MessagesPage() {
         return {
           ...thread,
           messages: [...thread.messages, newMessage],
-          lastMessage: inputValue,
+          lastMessage: text,
           time: 'Just now',
           unread: false
         };
@@ -43,7 +72,14 @@ export default function MessagesPage() {
     });
 
     setThreads(updatedThreads);
-    setInputValue('');
+
+    try {
+      await createMessage(activeThreadId, text, 'me');
+      const data = await getThreads();
+      setThreads(data);
+    } catch (err) {
+      console.error('Failed to send message:', err);
+    }
   };
 
   const filteredThreads = threads.filter(thread =>

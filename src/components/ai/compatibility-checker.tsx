@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Sparkles, BrainCircuit, UserCheck, Shield } from 'lucide-react';
-import { getPlayerCompatibilityRecommendations } from '@/ai/flows/player-compatibility-recommendations';
+import { getTeammatesCompatibility } from '@/lib/actions';
 import type { PlayerCompatibilityRecommendationsOutput } from '@/ai/flows/player-compatibility-recommendations';
 import { MOCK_USERS } from '@/lib/mock-data';
 
@@ -19,10 +19,7 @@ export function CompatibilityChecker() {
     if (!profile.trim()) return;
     setLoading(true);
     try {
-      const res = await getPlayerCompatibilityRecommendations({
-        currentPlayerProfile: profile,
-        potentialTeammates: MOCK_USERS.map(u => ({ id: u.id, profile: u.preferences }))
-      });
+      const res = await getTeammatesCompatibility(profile);
       setResults(res);
     } catch (error) {
       console.error(error);

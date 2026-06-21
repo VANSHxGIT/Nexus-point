@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NexusSidebar } from '@/components/layout/sidebar';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -11,18 +11,41 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { MOCK_REVIEWS, Review } from '@/lib/mock-data';
+import { Review } from '@/lib/mock-data';
+import { getReviews, createReview, likeReview } from '@/lib/actions';
 
 export default function ActivityFeedPage() {
   const { toast } = useToast();
-  const [reviews, setReviews] = useState<Review[]>(MOCK_REVIEWS);
+  const [reviews, setReviews] = useState<Review[]>([]);
+
+  useEffect(() => {
+    const loadReviews = async () => {
+      try {
+        const data = await getReviews();
+        setReviews(data.map(r => ({
+          id: r.id,
+          user: r.user,
+          avatar: r.avatar,
+          game: r.game,
+          rating: r.rating,
+          content: r.content,
+          likes: r.likes,
+          comments: r.comments,
+          time: new Date(r.time).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+        })));
+      } catch (err) {
+        console.error('Failed to load reviews:', err);
+      }
+    };
+    loadReviews();
+  }, []);
 
   const [gameName, setGameName] = useState('Minecraft');
   const [rating, setRating] = useState(5);
   const [opinionText, setOpinionText] = useState('');
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleShareOpinion = (e: React.FormEvent) => {
+  const handleShareOpinion = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!opinionText.trim()) {
@@ -35,7 +58,7 @@ export default function ActivityFeedPage() {
     }
 
     const newReview: Review = {
-      id: `r-${Date.now()}`,
+      id: `opt-${Date.now()}`,
       user: 'Pilot_Alex',
       avatar: 'https://picsum.photos/seed/pilot/40/40',
       game: gameName,
@@ -52,13 +75,31 @@ export default function ActivityFeedPage() {
     setRating(5);
     setIsOpen(false);
 
-    toast({
-      title: 'Success',
-      description: 'Your opinion has been shared to the feed!',
-    });
+    try {
+      await createReview(newReview.game, newReview.rating, newReview.content);
+      toast({
+        title: 'Success',
+        description: 'Your opinion has been shared to the feed!',
+      });
+      
+      const data = await getReviews();
+      setReviews(data.map(r => ({
+        id: r.id,
+        user: r.user,
+        avatar: r.avatar,
+        game: r.game,
+        rating: r.rating,
+        content: r.content,
+        likes: r.likes,
+        comments: r.comments,
+        time: new Date(r.time).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+      })));
+    } catch (err) {
+      console.error('Failed to save review:', err);
+    }
   };
 
-  const handleLike = (id: string) => {
+  const handleLike = async (id: string) => {
     setReviews(prev =>
       prev.map(r => (r.id === id ? { ...r, likes: r.likes + 1 } : r))
     );
@@ -66,6 +107,11 @@ export default function ActivityFeedPage() {
       title: 'Liked',
       description: 'You liked this opinion.',
     });
+    try {
+      await likeReview(id);
+    } catch (err) {
+      console.error('Failed to like review:', err);
+    }
   };
 
   return (

@@ -1,16 +1,14 @@
 import { NexusSidebar } from '@/components/layout/sidebar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MOCK_GAMES, MOCK_REVIEWS, MOCK_USERS } from '@/lib/mock-data';
+import { MOCK_GAMES } from '@/lib/mock-data';
+import { getDashboardStats } from '@/lib/actions';
 import { Gamepad2, Users, Flame } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
-export default function Home() {
-  const totalPlayersOnline = MOCK_GAMES.reduce((acc, game) => acc + game.playersOnline, 0).toLocaleString();
-  const totalReviews = MOCK_REVIEWS.length;
-  const compatibleMatches = MOCK_USERS.length;
-  const totalHubs = MOCK_GAMES.length;
+export default async function Home() {
+  const { totalPlayersOnline, totalReviews, compatibleMatches, totalHubs } = await getDashboardStats();
 
   return (
     <div className="flex min-h-screen">

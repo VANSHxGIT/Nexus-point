@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NexusSidebar } from '@/components/layout/sidebar';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Shield, Key, Eye, EyeOff, Plus, Gamepad, Copy, Check } from 'lucide-react';
@@ -10,16 +10,24 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
+import { getCredentials, createCredential } from '@/lib/actions';
 
 export default function VaultPage() {
   const { toast } = useToast();
   
-  const [credentials, setCredentials] = useState([
-    { platform: 'Valorant', id: 'Ghost#4432', status: 'Public' },
-    { platform: 'Minecraft', id: 'TheBuilder_X', status: 'Private' },
-    { platform: 'Discord', id: 'OMNIXAdmin#0001', status: 'Mutuals Only' },
-    { platform: 'Steam', id: 'Sarahrider', status: 'Public' },
-  ]);
+  const [credentials, setCredentials] = useState<{ platform: string; id: string; status: string }[]>([]);
+
+  useEffect(() => {
+    const loadCredentials = async () => {
+      try {
+        const data = await getCredentials();
+        setCredentials(data.map(c => ({ platform: c.platform, id: c.handle, status: c.status })));
+      } catch (err) {
+        console.error('Failed to load credentials:', err);
+      }
+    };
+    loadCredentials();
+  }, []);
 
   const [platform, setPlatform] = useState('');
   const [handle, setHandle] = useState('');
@@ -27,7 +35,7 @@ export default function VaultPage() {
   const [isOpen, setIsOpen] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const handleAddCredential = (e: React.FormEvent) => {
+  const handleAddCredential = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!platform.trim() || !handle.trim()) {
       toast({
@@ -60,10 +68,15 @@ export default function VaultPage() {
     setStatus('Public');
     setIsOpen(false);
 
-    toast({
-      title: 'Success',
-      description: `Added credential for ${newCred.platform}.`,
-    });
+    try {
+      await createCredential(newCred.platform, newCred.id, newCred.status);
+      toast({
+        title: 'Success',
+        description: `Added credential for ${newCred.platform}.`,
+      });
+    } catch (err) {
+      console.error('Failed to save credential:', err);
+    }
   };
 
   const handleCopy = (text: string, platformName: string) => {

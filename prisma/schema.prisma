@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "sqlite"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String       @id @default(uuid())
+  name         String
+  avatar       String
+  bio          String
+  preferences  String
+  credentials  Credential[]
+}
+
+model Credential {
+  id       String @id @default(uuid())
+  platform String
+  handle   String
+  status   String // "Public", "Mutuals Only", "Private"
+  userId   String
+  user     User   @relation(fields: [userId], references: [id])
+}
+
+model Message {
+  id           String   @id @default(uuid())
+  threadId     String   // game hub id (e.g. "minecraft") or dm thread id (e.g. "t1")
+  senderId     String   // "me" or teammate id
+  senderName   String
+  senderAvatar String
+  text         String
+  time         DateTime @default(now())
+}
+
+model Review {
+  id       String   @id @default(uuid())
+  user     String
+  avatar   String
+  game     String
+  rating   Int
+  content  String
+  likes    Int      @default(0)
+  comments Int      @default(0)
+  time     DateTime @default(now())
+}

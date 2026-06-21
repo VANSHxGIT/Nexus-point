@@ -1,42 +1,68 @@
 
 'use client';
 
-import { useState, use } from 'react';
+import { useState, use, useEffect } from 'react';
 import { NexusSidebar } from '@/components/layout/sidebar';
-import { MOCK_GAMES, MOCK_CHATS, ChatMessage } from '@/lib/mock-data';
+import { MOCK_GAMES, ChatMessage } from '@/lib/mock-data';
+import { getMessages, createMessage } from '@/lib/actions';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Send, Users, Info, ShieldCheck } from 'lucide-react';
+import { Send, Users } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export default function HubPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const game = MOCK_GAMES.find((g) => g.id === id);
-  const initialChats = MOCK_CHATS[id] || [];
   
-  const [messages, setMessages] = useState<ChatMessage[]>(initialChats);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
+
+  useEffect(() => {
+    let active = true;
+    const fetchChatHistory = async () => {
+      try {
+        const chats = await getMessages(id);
+        if (active) {
+          setMessages(chats);
+        }
+      } catch (err) {
+        console.error('Failed to load chat history:', err);
+      }
+    };
+    fetchChatHistory();
+    return () => {
+      active = false;
+    };
+  }, [id]);
 
   if (!game) notFound();
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
 
-    const newMessage: ChatMessage = {
-      id: Date.now().toString(),
+    const text = inputValue.trim();
+    setInputValue('');
+
+    const optimisticMessage: ChatMessage = {
+      id: `opt-${Date.now()}`,
       userId: 'me',
       userName: 'Pilot_Alex',
       userAvatar: 'https://picsum.photos/seed/pilot/40/40',
-      content: inputValue,
+      content: text,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
 
-    setMessages(prev => [...prev, newMessage]);
-    setInputValue('');
+    setMessages(prev => [...prev, optimisticMessage]);
+
+    try {
+      await createMessage(id, text, 'me');
+    } catch (err) {
+      console.error('Failed to send message:', err);
+    }
   };
 
   return (
